@@ -1,0 +1,9 @@
+.git
+.venv
+**/__pycache__
+results
+docs
+benchmarks
+*.json
+*.log
+*.safetensors

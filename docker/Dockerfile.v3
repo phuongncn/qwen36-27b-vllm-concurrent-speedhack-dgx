@@ -1,0 +1,12 @@
+ARG VLLM_BASE=vllm-sm121:latest
+FROM ${VLLM_BASE}
+
+# Concurrency-safe INT8 LM head: reuse each 1.27 GB weight read across up to
+# eight logit rows. The winner image layers FR-Spec and x16 on top of this.
+COPY patches/patch_int8_lmhead.py /opt/qwen36-speedhack/patch_int8_lmhead.py
+RUN python3 /opt/qwen36-speedhack/patch_int8_lmhead.py \
+ && grep -q DGX_SPARK_INT8_LMHEAD_V3 \
+      /usr/local/lib/python3.12/dist-packages/vllm/model_executor/layers/logits_processor.py
+
+ENTRYPOINT ["vllm"]
+CMD ["serve", "--help"]
